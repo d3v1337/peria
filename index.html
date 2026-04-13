@@ -21,7 +21,7 @@
     <div class="mode-header">
         <div class="mode-text" id="modeFrom">РУССКИЙ</div>
         <button class="swap-btn" onclick="swapMode()">⇄</button>
-        <div class="mode-text" id="modeTo">ПЭЛЫЙЗГЫЙ</div>
+        <div class="mode-text" id="modeTo">ПЕРИЙСКИЙ</div>
     </div>
 
     <textarea id="input" placeholder="Введите текст..."></textarea>
@@ -45,8 +45,8 @@
 
         function swapMode() {
             isReverse = !isReverse;
-            document.getElementById('modeFrom').innerText = isReverse ? "ПЭЛЫЙЗГЫЙ" : "РУССКИЙ";
-            document.getElementById('modeTo').innerText = isReverse ? "РУССКИЙ" : "ПЭЛЫЙЗГЫЙ";
+            document.getElementById('modeFrom').innerText = isReverse ? "ПЕРИЙСКИЙ" : "РУССКИЙ";
+            document.getElementById('modeTo').innerText = isReverse ? "РУССКИЙ" : "ПЕРИЙСКИЙ";
             process();
         }
 
