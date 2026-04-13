@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЮГ ПЫ TERMINAL v7.0</title>
+    <style>
+        body { background: #050505; color: #00ff41; font-family: 'Courier New', monospace; padding: 20px; text-align: center; }
+        .mode-header { display: flex; justify-content: space-around; align-items: center; margin-bottom: 15px; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #00ff41; }
+        .mode-text { font-weight: bold; font-size: 14px; color: #ffcc00; }
+        .swap-btn { background: none; border: 1px solid #00ff41; color: #00ff41; font-size: 20px; cursor: pointer; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        textarea { width: 100%; height: 120px; background: #000; color: #00ff41; border: 2px solid #00ff41; padding: 15px; border-radius: 8px; font-size: 18px; outline: none; box-sizing: border-box; }
+        .output-container { margin-top: 20px; text-align: left; background: #111; border: 1px solid #00ff41; padding: 15px; border-radius: 8px; }
+        #output { color: #ffcc00; font-size: 22px; font-weight: bold; min-height: 40px; word-break: break-all; white-space: pre-wrap; margin-bottom: 10px; }
+        .btn-copy { background: #00ff41; color: #000; border: none; padding: 15px; cursor: pointer; font-weight: bold; border-radius: 5px; width: 100%; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h2>ЮГ ПЫ: TRANSLATOR</h2>
+    
+    <div class="mode-header">
+        <div class="mode-text" id="modeFrom">РУССКИЙ</div>
+        <button class="swap-btn" onclick="swapMode()">⇄</button>
+        <div class="mode-text" id="modeTo">ПЭЛЫЙЗГЫЙ</div>
+    </div>
+
+    <textarea id="input" placeholder="Введите текст..."></textarea>
+    
+    <div class="output-container">
+        <div id="output">...</div>
+        <button class="btn-copy" onclick="copyText()">СКОПИРОВАТЬ</button>
+    </div>
+
+    <script>
+        let isReverse = false;
+
+        const rules = {
+            'п':'б', 'б':'п', 'г':'к', 'к':'г', 'д':'т', 'т':'д', 'в':'ф', 'ф':'в',
+            'з':'с', 'с':'з', 'л':'р', 'р':'л', 'ч':'4', 'ш':'щ', 'щ':'ш',
+            'а':'о', 'о':'а', 'ы':'и', 'и':'ы', 'у':'ю', 'ю':'у', 'э':'е', 'е':'э'
+        };
+
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+
+        function swapMode() {
+            isReverse = !isReverse;
+            document.getElementById('modeFrom').innerText = isReverse ? "ПЭЛЫЙЗГЫЙ" : "РУССКИЙ";
+            document.getElementById('modeTo').innerText = isReverse ? "РУССКИЙ" : "ПЭЛЫЙЗГЫЙ";
+            process();
+        }
+
+        function process() {
+            let text = input.value;
+            let words = text.split(/(\s+)/); 
+            
+            let result = words.map(word => {
+                // Игнорим Имена (заглавная буква), если мы шифруем (не в реверсе)
+                if (!isReverse && word.length > 0 && word[0] === word[0].toUpperCase() && /[А-ЯЁ]/.test(word[0])) {
+                    return word;
+                }
+
+                let wordResult = "";
+                for (let i = 0; i < word.length; i++) {
+                    let char = word[i].toLowerCase();
+                    let nextChar = word[i+1] ? word[i+1].toLowerCase() : null;
+
+                    if (!isReverse) { // В ПЕРИЙСКИЙ
+                        if (char === 'ь' || char === 'ъ') continue;
+                        if (char === 'ж') { wordResult += 'шъ'; continue; }
+                        wordResult += rules[char] || char;
+                    } else { // В РУССКИЙ
+                        if ((char === 'ш' || char === 'щ') && nextChar === 'ъ') {
+                            wordResult += 'ж'; i++;
+                        } else {
+                            wordResult += rules[char] || char;
+                        }
+                    }
+                }
+                return wordResult;
+            }).join('');
+
+            output.innerText = result || "...";
+        }
+
+        input.addEventListener('input', process);
+
+        function copyText() {
+            const text = output.innerText;
+            if (text === "...") return;
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert("Скопировано!");
+        }
+    </script>
+</body>
+</html>
