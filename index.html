@@ -3,20 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ЮГ ПЫ TERMINAL v7.0</title>
+    <title>ЮГ ПЫ TERMINAL v7.1 [SECURE]</title>
     <style>
         body { background: #050505; color: #00ff41; font-family: 'Courier New', monospace; padding: 20px; text-align: center; }
         .mode-header { display: flex; justify-content: space-around; align-items: center; margin-bottom: 15px; background: #111; padding: 10px; border-radius: 8px; border: 1px solid #00ff41; }
         .mode-text { font-weight: bold; font-size: 14px; color: #ffcc00; }
         .swap-btn { background: none; border: 1px solid #00ff41; color: #00ff41; font-size: 20px; cursor: pointer; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        
+        /* Стили для контейнера ввода с глазиком */
+        .input-wrapper { position: relative; width: 100%; margin-bottom: 10px; }
         textarea { width: 100%; height: 120px; background: #000; color: #00ff41; border: 2px solid #00ff41; padding: 15px; border-radius: 8px; font-size: 18px; outline: none; box-sizing: border-box; }
+        
+        /* Та самая кнопка-глазик */
+        .hide-btn { 
+            position: absolute; 
+            right: 15px; 
+            top: 15px; 
+            background: rgba(0, 255, 65, 0.1); 
+            border: 1px solid #00ff41; 
+            color: #00ff41; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            padding: 5px 10px;
+            font-size: 12px;
+            z-index: 10;
+        }
+        .hide-btn:hover { background: #00ff41; color: #000; }
+        
+        /* Класс для скрытия текста через webkit-text-security */
+        .hidden-text { -webkit-text-security: disc; }
+
         .output-container { margin-top: 20px; text-align: left; background: #111; border: 1px solid #00ff41; padding: 15px; border-radius: 8px; }
         #output { color: #ffcc00; font-size: 22px; font-weight: bold; min-height: 40px; word-break: break-all; white-space: pre-wrap; margin-bottom: 10px; }
         .btn-copy { background: #00ff41; color: #000; border: none; padding: 15px; cursor: pointer; font-weight: bold; border-radius: 5px; width: 100%; font-size: 16px; }
     </style>
 </head>
 <body>
-    <h2>ЮГ ПЫ: TRANSLATOR</h2>
+    <h2>ЮГ ПЫ: TRANSLATOR [SECURE MODE]</h2>
     
     <div class="mode-header">
         <div class="mode-text" id="modeFrom">РУССКИЙ</div>
@@ -24,7 +47,10 @@
         <div class="mode-text" id="modeTo">ПЕРИЙСКИЙ</div>
     </div>
 
-    <textarea id="input" placeholder="Введите текст..."></textarea>
+    <div class="input-wrapper">
+        <button class="hide-btn" id="toggleView" onclick="toggleVisibility()">👁 СКРЫТЬ</button>
+        <textarea id="input" placeholder="Введите текст..."></textarea>
+    </div>
     
     <div class="output-container">
         <div id="output">...</div>
@@ -33,15 +59,29 @@
 
     <script>
         let isReverse = false;
+        let isHidden = false;
 
         const rules = {
             'п':'б', 'б':'п', 'г':'к', 'к':'г', 'д':'т', 'т':'д', 'в':'ф', 'ф':'в',
             'з':'с', 'с':'з', 'л':'р', 'р':'л', 'ч':'4', 'ш':'щ', 'щ':'ш',
-            'а':'о', 'о':'а', 'ы':'и', 'и':'ы', 'у':'ю', 'ю':'у', 'э':'е', 'е':'э'
+            'а':'о', 'о':'а', 'ы':'и', 'и':'ы', 'у':'ю', 'ю':'у', 'э':'э', 'е':'э'
         };
 
         const input = document.getElementById('input');
         const output = document.getElementById('output');
+        const toggleBtn = document.getElementById('toggleView');
+
+        // Функция переключения видимости
+        function toggleVisibility() {
+            isHidden = !isHidden;
+            if (isHidden) {
+                input.classList.add('hidden-text');
+                toggleBtn.innerText = "🔒 ПОКАЗАТЬ";
+            } else {
+                input.classList.remove('hidden-text');
+                toggleBtn.innerText = "👁 СКРЫТЬ";
+            }
+        }
 
         function swapMode() {
             isReverse = !isReverse;
